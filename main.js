@@ -1,2 +1,151 @@
-(()=>{const e=document.querySelector("#holiday-month"),t=document.querySelector("#holiday-day"),n=(document.querySelector("#holiday-submit"),document.querySelector("#holiday-clear"),document.getElementById("holiday-date")),o=document.getElementById("holiday-name"),a=document.getElementById("day-off-month"),l=document.getElementById("day-off-day"),c=document.getElementById("day-off-year"),d=document.getElementById("countdown-timer"),r=document.querySelector("#day-off-submit"),i=document.querySelector("#day-off-clear"),u=(document.querySelector("#joke-submit"),document.querySelector("#joke-selected")),m=document.querySelector("#joke-clear");holidaySubmit.addEventListener("click",(a=>{a.preventDefault(),""===e.value||""===t.value?n.textContent="Please, fill all the fields.":(()=>{const a=e.value.toString(),l=t.value.toString();fetch("https://holidays.abstractapi.com/v1/?api_key=f12d8eae0def42a096ad807365e937ca&country=PL&year=2021&month="+a+"&day="+l).then((e=>e.json())).then((e=>{const t=e[0].date,a=e[0].name;n.textContent=t,o.textContent=a})).catch((e=>{console.error("Error:",e)}))})()})),holidayClear.addEventListener("click",(()=>{e.textContent="",t.textContent="",n.textContent="",o.textContent=""})),r.addEventListener("click",(()=>{""===l.value||""===c.value?d.textContent="Please, fill all the fields.":function(){const e=a.value.toString(),t=l.value.toString(),n=c.value.toString(),o=new Date(e+" "+t+", "+n).getTime(),r=setInterval((function(){const e=(new Date).getTime(),t=o-e,n=Math.floor(t/864e5),a=Math.floor(t%864e5/36e5),l=Math.floor(t%36e5/6e4),c=Math.floor(t%6e4/1e3);d.innerHTML=n+"d "+a+"h "+l+"m "+c+"s ",t<0&&(clearInterval(r),d.innerHTML="A thing of the past.")}),1e3)}()})),i.addEventListener("click",(()=>{a.value="",l.value="",c.value="",d.hidden=!0})),jokeSubmit.addEventListener("click",(e=>{e.preventDefault(),fetch("https://icanhazdadjoke.com/",{headers:{Accept:"application/json"}}).then((e=>e.json())).then((e=>{const t=e.joke;document.getElementById("joke_selected").textContent=t,console.log(e)})).catch((e=>{console.error("Error:",e)}))})),m.addEventListener("click",(()=>{u.textContent=""}))})();
-//# sourceMappingURL=main.js.map
+const url =
+  'https://holidays.abstractapi.com/v1/?api_key=f12d8eae0def42a096ad807365e937ca';
+const monthField = document.querySelector('#holiday-month');
+const dayField = document.querySelector('#holiday-day');
+const submit = document.querySelector('#holiday-submit');
+const clear = document.querySelector('#holiday-clear');
+const dateField = document.getElementById('holiday-date');
+const nameField = document.getElementById('holiday-name');
+
+const submittedMonth = document.getElementById('day-off-month');
+const submittedDay = document.getElementById('day-off-day');
+const submittedYear = document.getElementById('day-off-year');
+const timer = document.getElementById('countdown-timer');
+const submitDay = document.querySelector('#day-off-submit');
+const clearDay = document.querySelector('#day-off-clear');
+
+const submitPick = document.querySelector('#joke-submit');
+const responseArea = document.querySelector('#joke-selected');
+const clearJoke = document.querySelector('#joke-clear');
+
+// The functions for Holiday Checker.
+
+const getResults = () => {
+  const monthQuery = monthField.value.toString();
+  const dayQuery = dayField.value.toString();
+  const endpoint =
+    url +
+    '&country=PL' +
+    '&year=2021' +
+    '&month=' +
+    monthQuery +
+    '&day=' +
+    dayQuery;
+
+  fetch(endpoint)
+    .then(response => response.json())
+    .then(response => {
+      const getDate = response[0].date;
+      const getName = response[0].name;
+      dateField.textContent = getDate;
+      nameField.textContent = getName;
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+};
+
+const secureFields = () => {
+  if (monthField.value === '' || dayField.value === '') {
+    dateField.textContent = 'Please, fill all the fields.';
+  } else {
+    getResults();
+  }
+};
+
+const displayResults = event => {
+  event.preventDefault();
+
+  secureFields();
+};
+
+const clearResult = () => {
+  monthField.textContent = '';
+  dayField.textContent = '';
+  dateField.textContent = '';
+  nameField.textContent = '';
+};
+
+holidaySubmit.addEventListener('click', displayResults);
+holidayClear.addEventListener('click', clearResult);
+
+// The functions for Day off Countdowner.
+
+function getFinalDate() {
+  const parsedMonth = submittedMonth.value.toString();
+  const parsedDay = submittedDay.value.toString();
+  const parsedYear = submittedYear.value.toString();
+  const parsedTime = parsedMonth + ' ' + parsedDay + ', ' + parsedYear;
+
+  const countDownDate = new Date(parsedTime).getTime();
+  const x = setInterval(function () {
+    const now = new Date().getTime();
+    const distance = countDownDate - now;
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(
+      (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+    );
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    timer.innerHTML =
+      days + 'd ' + hours + 'h ' + minutes + 'm ' + seconds + 's ';
+
+    if (distance < 0) {
+      clearInterval(x);
+      timer.innerHTML = 'A thing of the past.';
+    }
+  }, 1000);
+}
+
+const checkFields = () => {
+  if (submittedDay.value === '' || submittedYear.value === '') {
+    timer.textContent = 'Please, fill all the fields.';
+  } else {
+    getFinalDate();
+  }
+};
+
+const clearDayField = () => {
+  submittedMonth.value = '';
+  submittedDay.value = '';
+  submittedYear.value = '';
+  timer.hidden = true;
+};
+
+submitDay.addEventListener('click', checkFields);
+clearDay.addEventListener('click', clearDayField);
+
+// The functions for Joke Picker.
+
+const getJoke = () => {
+  const address = 'https://icanhazdadjoke.com/';
+  const options = {
+    headers: {
+      Accept: 'application/json',
+    },
+  };
+  fetch(address, options)
+    .then(response => response.json())
+    .then(response => {
+      const generateJoke = response.joke;
+      document.getElementById('joke_selected').textContent = generateJoke;
+      console.log(response);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+};
+
+const displayJokes = event => {
+  event.preventDefault();
+
+  getJoke();
+};
+
+const clearJokeField = () => {
+  responseArea.textContent = '';
+};
+
+jokeSubmit.addEventListener('click', displayJokes);
+clearJoke.addEventListener('click', clearJokeField);
