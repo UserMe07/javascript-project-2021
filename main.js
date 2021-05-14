@@ -66,8 +66,8 @@ const clearResult = () => {
   nameField.textContent = '';
 };
 
-holidaySubmit.addEventListener('click', displayResults);
-holidayClear.addEventListener('click', clearResult);
+submit.addEventListener('click', displayResults);
+clear.addEventListener('click', clearResult);
 
 // The functions for Day off Countdowner.
 
@@ -147,5 +147,5 @@ const clearJokeField = () => {
   responseArea.textContent = '';
 };
 
-jokeSubmit.addEventListener('click', displayJokes);
+submitPick.addEventListener('click', displayJokes);
 clearJoke.addEventListener('click', clearJokeField);
