@@ -129,7 +129,7 @@ const getJoke = () => {
     .then(response => response.json())
     .then(response => {
       const generateJoke = response.joke;
-      document.getElementById('joke_selected').textContent = generateJoke;
+      responseArea.textContent = generateJoke;
       console.log(response);
     })
     .catch(error => {
